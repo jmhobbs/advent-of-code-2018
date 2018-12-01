@@ -59,3 +59,8 @@ func TestShifts(t *testing.T) {
 		h.Equals(t, test.Expected, actual)
 	}
 }
+
+func TestParseShift(t *testing.T) {
+	h.Equals(t, parseShift("+5"), 5)
+	h.Equals(t, parseShift("-5"), -5)
+}
