@@ -25,6 +25,7 @@ func main() {
 	}
 
 	log.Println("A:", frequencyShift(shifts))
+	log.Println("B:", duplicateFrequencyShift(shifts))
 }
 
 func duplicateFrequencyShift(shifts []string) int {
