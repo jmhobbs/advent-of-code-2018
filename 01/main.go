@@ -27,6 +27,10 @@ func main() {
 	log.Println("A:", frequencyShift(shifts))
 }
 
+func duplicateFrequencyShift(shifts []string) int {
+	return 0
+}
+
 func frequencyShift(shifts []string) int {
 	v := 0
 	for _, shift := range shifts {
