@@ -28,7 +28,17 @@ func main() {
 }
 
 func duplicateFrequencyShift(shifts []string) int {
-	return 0
+	v := 0
+	seen := map[int]bool{0: true}
+	for {
+		for _, shift := range shifts {
+			v = v + parseShift(shift)
+			if _, ok := seen[v]; ok {
+				return v
+			}
+			seen[v] = true
+		}
+	}
 }
 
 func frequencyShift(shifts []string) int {
