@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"os"
 	"strconv"
@@ -12,6 +13,18 @@ func main() {
 		log.Fatal(err)
 	}
 	defer file.Close()
+
+	var shifts []string
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		shifts = append(shifts, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal("error reading input:", err)
+	}
+
+	log.Println("A:", frequencyShift(shifts))
 }
 
 func frequencyShift(shifts []string) int {
