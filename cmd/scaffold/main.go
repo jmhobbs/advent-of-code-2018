@@ -115,6 +115,16 @@ func main() {
 	}
 	defer file.Close()
 
+	var lines []string
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal("error reading input:", err)
+	}
+
 	fmt.Println(todo())
 }
 
