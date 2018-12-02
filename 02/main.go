@@ -14,5 +14,17 @@ func main() {
 }
 
 func count(s string) (bool, bool) {
-	return false, false
+	v := make(map[rune]uint)
+	for _, c := range s {
+		v[c] = v[c] + 1
+	}
+
+	two := false
+	three := false
+	for _, i := range v {
+		two = two || (i == 2)
+		three = three || (i == 3)
+	}
+
+	return two, three
 }
