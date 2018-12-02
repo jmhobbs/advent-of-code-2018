@@ -49,6 +49,15 @@ func count(s string) (bool, bool) {
 	return two, three
 }
 
-func differsByOne(a, b string) bool {
-	return false
+func differsByOneIndex(a, b string) int {
+	differs := -1
+	for i, r := range a {
+		if b[i] != byte(r) {
+			if differs != -1 {
+				return -1
+			}
+			differs = i
+		}
+	}
+	return differs
 }
