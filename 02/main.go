@@ -48,3 +48,7 @@ func count(s string) (bool, bool) {
 
 	return two, three
 }
+
+func differsByOne(a, b string) bool {
+	return false
+}

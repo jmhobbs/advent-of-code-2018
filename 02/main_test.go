@@ -64,3 +64,9 @@ func TestCount(t *testing.T) {
 		h.Equals(t, c.ThreeCount, three)
 	}
 }
+
+func TestDiffersByOne(t *testing.T) {
+	h.Equals(t, differsByOneIndex("abcde", "abcde"), -1)
+	h.Equals(t, differsByOneIndex("abcde", "axcye"), -1)
+	h.Equals(t, differsByOneIndex("fghij", "fguij"), 2)
+}
