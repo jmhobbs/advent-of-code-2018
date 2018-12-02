@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"os"
 )
@@ -11,6 +12,25 @@ func main() {
 		log.Fatal(err)
 	}
 	defer file.Close()
+
+	twice := 0
+	thrice := 0
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		two, three := count(scanner.Text())
+		if two {
+			twice += 1
+		}
+		if three {
+			thrice += 1
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal("error reading input:", err)
+	}
+
+	log.Println("A:", twice*thrice)
 }
 
 func count(s string) (bool, bool) {
