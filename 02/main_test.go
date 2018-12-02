@@ -70,3 +70,15 @@ func TestDiffersByOne(t *testing.T) {
 	h.Equals(t, differsByOneIndex("abcde", "axcye"), -1)
 	h.Equals(t, differsByOneIndex("fghij", "fguij"), 2)
 }
+
+func TestSamsies(t *testing.T) {
+	lines := []string{
+		"opitlop",
+		"abcoghj",
+		"nopenop",
+		"abckghj",
+		"wahnaha",
+	}
+
+	h.Equals(t, samsies(lines), "abcghj")
+}
