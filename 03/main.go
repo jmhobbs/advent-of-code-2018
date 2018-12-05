@@ -77,14 +77,15 @@ func ParseClaim(s string) Claim {
 }
 
 type Fabric struct {
-	Size int
-	grid [][]int
+	Size   int
+	grid   [][][]int
+	claims []Claim
 }
 
 func NewFabric(size int) *Fabric {
-	grid := make([][]int, size)
+	grid := make([][][]int, size)
 	for i := range grid {
-		grid[i] = make([]int, size)
+		grid[i] = make([][]int, size)
 	}
 	return &Fabric{Size: size, grid: grid}
 }
@@ -92,9 +93,10 @@ func NewFabric(size int) *Fabric {
 func (f *Fabric) AddClaim(c Claim) {
 	for x := c.X; x < c.X+c.W; x++ {
 		for y := c.Y; y < c.Y+c.H; y++ {
-			f.grid[x][y] = f.grid[x][y] + 1
+			f.grid[x][y] = append(f.grid[x][y], c.ID)
 		}
 	}
+	f.claims = append(f.claims, c)
 }
 
 func (f *Fabric) OverlappingInches() int {
@@ -102,7 +104,7 @@ func (f *Fabric) OverlappingInches() int {
 
 	for x := 0; x < f.Size; x++ {
 		for y := 0; y < f.Size; y++ {
-			if f.grid[x][y] > 1 {
+			if len(f.grid[x][y]) > 1 {
 				overlaps = overlaps + 1
 			}
 		}
@@ -117,7 +119,14 @@ func (f *Fabric) String() string {
 	for y := 0; y < f.Size; y++ {
 		row := []string{}
 		for x := 0; x < f.Size; x++ {
-			row = append(row, strconv.Itoa(f.grid[x][y]))
+			switch len(f.grid[x][y]) {
+			case 0:
+				row = append(row, ".")
+			case 1:
+				row = append(row, strconv.Itoa(f.grid[x][y][0]))
+			default:
+				row = append(row, "X")
+			}
 		}
 		s = append(s, strings.Join(row, ""))
 	}
@@ -126,5 +135,19 @@ func (f *Fabric) String() string {
 }
 
 func (f *Fabric) NonOverlappingClaims() []int {
-	return []int{}
+	nonOverlapping := []int{}
+	for _, c := range f.claims {
+		sentinel := false
+		for x := c.X; x < c.X+c.W && !sentinel; x++ {
+			for y := c.Y; y < c.Y+c.H && !sentinel; y++ {
+				if len(f.grid[x][y]) > 1 {
+					sentinel = true
+				}
+			}
+		}
+		if !sentinel {
+			nonOverlapping = append(nonOverlapping, c.ID)
+		}
+	}
+	return nonOverlapping
 }
