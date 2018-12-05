@@ -27,3 +27,16 @@ func TestOverlappingClaims(t *testing.T) {
 	f.AddClaim(ParseClaim("#3 @ 5,5: 2x2"))
 	h.Equals(t, f.OverlappingInches(), 4)
 }
+
+func TestNonOverlappingClaims(t *testing.T) {
+	/*
+		#1 @ 1,3: 4x4
+		#2 @ 3,1: 4x4
+		#3 @ 5,5: 2x2
+	*/
+	f := NewFabric(8)
+	f.AddClaim(ParseClaim("#1 @ 1,3: 4x4"))
+	f.AddClaim(ParseClaim("#2 @ 3,1: 4x4"))
+	f.AddClaim(ParseClaim("#3 @ 5,5: 2x2"))
+	h.Equals(t, f.NonOverlappingClaims(), []int{3})
+}

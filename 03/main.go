@@ -124,3 +124,7 @@ func (f *Fabric) String() string {
 
 	return strings.Join(s, "\n")
 }
+
+func (f *Fabric) NonOverlappingClaims() []int {
+	return []int{}
+}
