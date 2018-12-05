@@ -27,6 +27,7 @@ func main() {
 	}
 
 	log.Println("A:", fabric.OverlappingInches())
+	log.Println("B:", fabric.NonOverlappingClaims()[0])
 }
 
 type Claim struct {
