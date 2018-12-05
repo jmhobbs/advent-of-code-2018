@@ -16,15 +16,17 @@ func main() {
 	}
 	defer file.Close()
 
-	var lines []string
+	fabric := NewFabric(1000)
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		fabric.AddClaim(ParseClaim(scanner.Text()))
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal("error reading input:", err)
 	}
+
+	log.Println("A:", fabric.OverlappingInches())
 }
 
 type Claim struct {
