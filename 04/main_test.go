@@ -36,9 +36,9 @@ func TestParsing(t *testing.T) {
 
 	for _, expect := range expected {
 		evt := parseLine(expect.Line)
-		h.Equals(t, expect.Time, evt.Time().Format(EVENT_TIME_FORMAT))
-		h.Equals(t, expect.Type, evt.Type())
-		h.Equals(t, expect.Guard, evt.Guard())
+		h.Equals(t, expect.Time, evt.Time.Format(EVENT_TIME_FORMAT))
+		h.Equals(t, expect.Type, evt.Type)
+		h.Equals(t, expect.Guard, evt.Guard)
 	}
 }
 
@@ -50,17 +50,17 @@ func TestSorting(t *testing.T) {
 		"[1518-11-01 00:05] falls asleep",
 	}
 
-	events := []Event{}
+	events := []*Event{}
 	for _, line := range lines {
 		events = append(events, parseLine(line))
 	}
 
 	sorted := sortEvents(events)
 
-	h.Equals(t, "1518-11-01 00:00", sorted[0].Time().Format(EVENT_TIME_FORMAT))
-	h.Equals(t, "1518-11-01 00:05", sorted[1].Time().Format(EVENT_TIME_FORMAT))
-	h.Equals(t, "1518-11-01 00:25", sorted[2].Time().Format(EVENT_TIME_FORMAT))
-	h.Equals(t, "1518-11-01 00:30", sorted[3].Time().Format(EVENT_TIME_FORMAT))
+	h.Equals(t, "1518-11-01 00:00", sorted[0].Time.Format(EVENT_TIME_FORMAT))
+	h.Equals(t, "1518-11-01 00:05", sorted[1].Time.Format(EVENT_TIME_FORMAT))
+	h.Equals(t, "1518-11-01 00:25", sorted[2].Time.Format(EVENT_TIME_FORMAT))
+	h.Equals(t, "1518-11-01 00:30", sorted[3].Time.Format(EVENT_TIME_FORMAT))
 }
 
 func TestSleepiestMinute(t *testing.T) {
@@ -73,17 +73,141 @@ func TestSleepiestMinute(t *testing.T) {
 	naps := []Nap{
 		Nap{
 			time.Date(1518, time.November, 1, 0, 5, 0, 0, time.UTC),
-			20,
+			time.Date(1518, time.November, 1, 0, 25, 0, 0, time.UTC),
 		},
 		Nap{
-			time.Date(1518, time.November, 3, 2, 4, 0, 0, time.UTC),
-			5,
+			time.Date(1518, time.November, 3, 0, 24, 0, 0, time.UTC),
+			time.Date(1518, time.November, 3, 0, 29, 0, 0, time.UTC),
 		},
 		Nap{
-			time.Date(1518, time.November, 1, 3, 0, 0, 0, time.UTC),
-			25,
+			time.Date(1518, time.November, 1, 0, 30, 0, 0, time.UTC),
+			time.Date(1518, time.November, 1, 0, 55, 0, 0, time.UTC),
 		},
 	}
 
 	h.Equals(t, 24, sleepiestMinute(naps))
+}
+
+func TestFindShifts(t *testing.T) {
+	events := []*Event{
+		&Event{
+			time.Date(1518, time.November, 1, 0, 0, 0, 0, time.UTC),
+			10,
+			TYPE_BEGIN,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 5, 0, 0, time.UTC),
+			-1,
+			TYPE_SLEEP,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 25, 0, 0, time.UTC),
+			-1,
+			TYPE_WAKE,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 30, 0, 0, time.UTC),
+			8,
+			TYPE_BEGIN,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 35, 0, 0, time.UTC),
+			-1,
+			TYPE_SLEEP,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 37, 0, 0, time.UTC),
+			-1,
+			TYPE_WAKE,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 42, 0, 0, time.UTC),
+			-1,
+			TYPE_SLEEP,
+		},
+		&Event{
+			time.Date(1518, time.November, 1, 0, 55, 0, 0, time.UTC),
+			-1,
+			TYPE_WAKE,
+		},
+	}
+
+	expected := []Shift{
+		Shift{
+			10,
+			time.Date(1518, time.November, 1, 0, 0, 0, 0, time.UTC),
+			[]Nap{
+				Nap{
+					time.Date(1518, time.November, 1, 0, 5, 0, 0, time.UTC),
+					time.Date(1518, time.November, 1, 0, 25, 0, 0, time.UTC),
+				},
+			},
+		},
+		Shift{
+			8,
+			time.Date(1518, time.November, 1, 0, 30, 0, 0, time.UTC),
+			[]Nap{
+				Nap{
+					time.Date(1518, time.November, 1, 0, 35, 0, 0, time.UTC),
+					time.Date(1518, time.November, 1, 0, 37, 0, 0, time.UTC),
+				},
+				Nap{
+					time.Date(1518, time.November, 1, 0, 42, 0, 0, time.UTC),
+					time.Date(1518, time.November, 1, 0, 55, 0, 0, time.UTC),
+				},
+			},
+		},
+	}
+
+	h.Equals(t, expected, findShifts(events))
+}
+
+func TestSleepiestGuard(t *testing.T) {
+	shifts := []Shift{
+		Shift{
+			10,
+			time.Date(1518, time.November, 1, 0, 0, 0, 0, time.UTC),
+			[]Nap{
+				Nap{
+					time.Date(1518, time.November, 1, 0, 5, 0, 0, time.UTC),
+					time.Date(1518, time.November, 1, 0, 25, 0, 0, time.UTC),
+				},
+			},
+		},
+		Shift{
+			8,
+			time.Date(1518, time.November, 1, 0, 30, 0, 0, time.UTC),
+			[]Nap{
+				Nap{
+					time.Date(1518, time.November, 1, 0, 35, 0, 0, time.UTC),
+					time.Date(1518, time.November, 1, 0, 37, 0, 0, time.UTC),
+				},
+				Nap{
+					time.Date(1518, time.November, 1, 0, 42, 0, 0, time.UTC),
+					time.Date(1518, time.November, 1, 0, 55, 0, 0, time.UTC),
+				},
+			},
+		},
+	}
+
+	h.Equals(t, 10, sleepiestGuard(shifts))
+}
+
+func TestMinutesAsleep(t *testing.T) {
+	s := Shift{
+		0,
+		time.Date(1518, time.November, 1, 0, 0, 0, 0, time.UTC),
+		[]Nap{
+			Nap{
+				time.Date(1518, time.November, 1, 0, 5, 0, 0, time.UTC),
+				time.Date(1518, time.November, 1, 0, 15, 0, 0, time.UTC),
+			},
+			Nap{
+				time.Date(1518, time.November, 1, 0, 20, 0, 0, time.UTC),
+				time.Date(1518, time.November, 1, 0, 23, 0, 0, time.UTC),
+			},
+		},
+	}
+
+	h.Equals(t, 13, s.MinutesAsleep())
 }
