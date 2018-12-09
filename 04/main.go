@@ -18,15 +18,31 @@ func main() {
 	}
 	defer file.Close()
 
-	var lines []string
+	var events []*Event
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		events = append(events, parseLine(scanner.Text()))
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal("error reading input:", err)
 	}
+
+	events = sortEvents(events)
+	shifts := findShifts(events)
+
+	guard_id := sleepiestGuard(shifts)
+
+	naps := []Nap{}
+	for _, shift := range shifts {
+		if shift.Guard == guard_id {
+			naps = append(naps, shift.Naps...)
+		}
+	}
+
+	minute := sleepiestMinute(naps)
+
+	log.Println("A:", guard_id*minute)
 }
 
 const EVENT_TIME_FORMAT string = "2006-01-02 15:04"
