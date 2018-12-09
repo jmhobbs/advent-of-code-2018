@@ -25,5 +25,33 @@ func main() {
 }
 
 func reduce(input string) string {
-	return ""
+	var last rune
+	var output []rune
+	var reduced bool
+	for {
+		reduced = false
+		last = 0
+		output = output[:0]
+
+		for _, c := range input {
+			if c-32 == last || c+32 == last {
+				last = 0
+				reduced = true
+				continue
+			}
+			if last != 0 {
+				output = append(output, last)
+			}
+			last = c
+		}
+		if last != 0 {
+			output = append(output, last)
+		}
+
+		if !reduced {
+			break
+		}
+		input = string(output)
+	}
+	return input
 }
