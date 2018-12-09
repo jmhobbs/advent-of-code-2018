@@ -200,6 +200,16 @@ func sleepiestMinute(naps []Nap) int {
 
 func sleepsPerMinute(shifts []Shift) map[int][]int {
 	guards := make(map[int][]int)
+	for _, shift := range shifts {
+		if _, ok := guards[shift.Guard]; !ok {
+			guards[shift.Guard] = make([]int, 60)
+		}
+		for _, nap := range shift.Naps {
+			for i := nap.Start.Minute(); i < nap.End.Minute(); i++ {
+				guards[shift.Guard][i] = guards[shift.Guard][i] + 1
+			}
+		}
+	}
 	return guards
 }
 
@@ -207,5 +217,14 @@ func sleepiestMinuteAllTime(guards map[int][]int) (int, int, int) {
 	sleepiest_guard := -1
 	sleepiest_minute := -1
 	sleepiest_count := -1
+	for guard, minutes := range guards {
+		for minute, count := range minutes {
+			if count > sleepiest_count {
+				sleepiest_guard = guard
+				sleepiest_minute = minute
+				sleepiest_count = count
+			}
+		}
+	}
 	return sleepiest_guard, sleepiest_minute, sleepiest_count
 }
