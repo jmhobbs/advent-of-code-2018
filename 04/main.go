@@ -43,6 +43,10 @@ func main() {
 	minute := sleepiestMinute(naps)
 
 	log.Println("A:", guard_id*minute)
+
+	guard_id, minute, _ = sleepiestMinuteAllTime(sleepsPerMinute(shifts))
+
+	log.Println("B:", guard_id*minute)
 }
 
 const EVENT_TIME_FORMAT string = "2006-01-02 15:04"
