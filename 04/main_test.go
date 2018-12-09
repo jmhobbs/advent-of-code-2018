@@ -211,3 +211,78 @@ func TestMinutesAsleep(t *testing.T) {
 
 	h.Equals(t, 13, s.MinutesAsleep())
 }
+
+/*
+Date   ID   Minute
+            000000000011111111112222222222333333333344444444445555555555
+            012345678901234567890123456789012345678901234567890123456789
+11-01  #10  .....####################.....#########################.....
+11-02  #99  ........................................##########..........
+11-03  #10  ........................#####...............................
+11-04  #99  ....................................##########..............
+11-05  #99  .............................................##########.....
+*/
+
+func TestSleepsPerMinute(t *testing.T) {
+	lines := []string{
+		"[1518-11-01 00:00] Guard #10 begins shift",
+		"[1518-11-01 00:05] falls asleep",
+		"[1518-11-01 00:25] wakes up",
+		"[1518-11-01 00:30] falls asleep",
+		"[1518-11-01 00:55] wakes up",
+		"[1518-11-01 23:58] Guard #99 begins shift",
+		"[1518-11-02 00:40] falls asleep",
+		"[1518-11-02 00:50] wakes up",
+		"[1518-11-03 00:05] Guard #10 begins shift",
+		"[1518-11-03 00:24] falls asleep",
+		"[1518-11-03 00:29] wakes up",
+		"[1518-11-04 00:02] Guard #99 begins shift",
+		"[1518-11-04 00:36] falls asleep",
+		"[1518-11-04 00:46] wakes up",
+		"[1518-11-05 00:03] Guard #99 begins shift",
+		"[1518-11-05 00:45] falls asleep",
+		"[1518-11-05 00:55] wakes up",
+	}
+	events := []*Event{}
+	for _, line := range lines {
+		events = append(events, parseLine(line))
+	}
+
+	guards := sleepsPerMinute(findShifts(events))
+
+	h.Equals(t, 3, guards[99][45])
+}
+
+func TestSleepiestMinuteAllTime(t *testing.T) {
+	lines := []string{
+		"[1518-11-01 00:00] Guard #10 begins shift",
+		"[1518-11-01 00:05] falls asleep",
+		"[1518-11-01 00:25] wakes up",
+		"[1518-11-01 00:30] falls asleep",
+		"[1518-11-01 00:55] wakes up",
+		"[1518-11-01 23:58] Guard #99 begins shift",
+		"[1518-11-02 00:40] falls asleep",
+		"[1518-11-02 00:50] wakes up",
+		"[1518-11-03 00:05] Guard #10 begins shift",
+		"[1518-11-03 00:24] falls asleep",
+		"[1518-11-03 00:29] wakes up",
+		"[1518-11-04 00:02] Guard #99 begins shift",
+		"[1518-11-04 00:36] falls asleep",
+		"[1518-11-04 00:46] wakes up",
+		"[1518-11-05 00:03] Guard #99 begins shift",
+		"[1518-11-05 00:45] falls asleep",
+		"[1518-11-05 00:55] wakes up",
+	}
+	events := []*Event{}
+	for _, line := range lines {
+		events = append(events, parseLine(line))
+	}
+
+	guards := sleepsPerMinute(findShifts(events))
+
+	guard_id, minute, count := sleepiestMinuteAllTime(guards)
+
+	h.Equals(t, 99, guard_id)
+	h.Equals(t, 45, minute)
+	h.Equals(t, 3, count)
+}

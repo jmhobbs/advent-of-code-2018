@@ -197,3 +197,15 @@ func sleepiestMinute(naps []Nap) int {
 
 	return max_minute
 }
+
+func sleepsPerMinute(shifts []Shift) map[int][]int {
+	guards := make(map[int][]int)
+	return guards
+}
+
+func sleepiestMinuteAllTime(guards map[int][]int) (int, int, int) {
+	sleepiest_guard := -1
+	sleepiest_minute := -1
+	sleepiest_count := -1
+	return sleepiest_guard, sleepiest_minute, sleepiest_count
+}
