@@ -11,7 +11,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("A:", len(reduce(input)))
+
+	pre_pass := reduce(input)
+	log.Println("A:", len(pre_pass))
+
+	best_size := len(pre_pass)
+	for _, polymer := range findAllPolymers(pre_pass) {
+		size := len(reduce(stripPolymer(pre_pass, polymer)))
+		if size < best_size {
+			best_size = size
+		}
+	}
+	log.Println("B:", best_size)
 }
 
 func reduce(input []byte) []byte {
