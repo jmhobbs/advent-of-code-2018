@@ -83,3 +83,11 @@ func TestReduceStep(t *testing.T) {
 		h.Equals(t, []byte(sample.Output), reduceStep([]byte(sample.Input)))
 	}
 }
+
+func TestStripPolymer(t *testing.T) {
+	h.Equals(t, []byte{'a', 'A', 'b', 'B'}, stripPolymer([]byte{'a', 'T', 'A', 'b', 't', 'B'}, 'T'))
+}
+
+func TestFindAllPolymers(t *testing.T) {
+	h.Equals(t, []byte{'A', 'B'}, findAllPolymers([]byte{'a', 'A', 'b'}))
+}

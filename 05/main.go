@@ -37,6 +37,15 @@ func reduceStep(input []byte) []byte {
 	return input
 }
 
+func stripPolymer(input []byte, polymer byte) []byte {
+	return input
+}
+
+func findAllPolymers(input []byte) []byte {
+	polymers := []byte{}
+	return polymers
+}
+
 // Wrote this first, it does not work how the description does.
 func wrongReduce(input string) string {
 	var last rune
