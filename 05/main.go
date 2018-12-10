@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"io/ioutil"
 	"log"
 )
@@ -38,11 +39,22 @@ func reduceStep(input []byte) []byte {
 }
 
 func stripPolymer(input []byte, polymer byte) []byte {
-	return input
+	return bytes.Replace(bytes.Replace(input, []byte{polymer}, []byte{}, -1), []byte{polymer + 32}, []byte{}, -1)
 }
 
 func findAllPolymers(input []byte) []byte {
 	polymers := []byte{}
+	for _, c := range input {
+		if c >= 'A' && c <= 'Z' {
+			if !bytes.ContainsRune(polymers, rune(c)) {
+				polymers = append(polymers, c)
+			}
+		} else if c >= 'a' && c <= 'z' {
+			if !bytes.ContainsRune(polymers, rune(c-32)) {
+				polymers = append(polymers, c-32)
+			}
+		}
+	}
 	return polymers
 }
 
