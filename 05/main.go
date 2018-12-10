@@ -1,30 +1,44 @@
 package main
 
 import (
-	"bufio"
+	"io/ioutil"
 	"log"
-	"os"
 )
 
 func main() {
-	file, err := os.Open("input")
+	input, err := ioutil.ReadFile("input")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-
-	var lines []string
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal("error reading input:", err)
-	}
+	log.Println("A:", len(reduce(input)))
 }
 
-func reduce(input string) string {
+func reduce(input []byte) []byte {
+	for {
+		length := len(input)
+		input = reduceStep(input)
+		if len(input) == length {
+			break
+		}
+	}
+
+	return input
+}
+
+func reduceStep(input []byte) []byte {
+	var last byte = 0
+	for i, c := range input {
+		if c-32 == last || c+32 == last {
+			input = append(input[:i-1], input[i+1:]...)
+			break
+		}
+		last = c
+	}
+	return input
+}
+
+// Wrote this first, it does not work how the description does.
+func wrongReduce(input string) string {
 	var last rune
 	var output []rune
 	var reduced bool

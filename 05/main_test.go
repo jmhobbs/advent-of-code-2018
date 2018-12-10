@@ -49,6 +49,37 @@ func TestReduce(t *testing.T) {
 	}
 
 	for _, sample := range samples {
-		h.Equals(t, sample.Output, reduce(sample.Input))
+		h.Equals(t, []byte(sample.Output), reduce([]byte(sample.Input)))
+	}
+}
+
+func TestReduceStep(t *testing.T) {
+	/*
+		Now, consider a larger example, dabAcCaCBAcCcaDA:
+
+		dabAcCaCBAcCcaDA  The first 'cC' is removed.
+		dabAaCBAcCcaDA    This creates 'Aa', which is removed.
+		dabCBAcCcaDA      Either 'cC' or 'Cc' are removed (the result is the same).
+		dabCBAcaDA        No further actions can be taken.
+	*/
+	samples := []struct {
+		Input  string
+		Output string
+	}{
+		{
+			"dabAcCaCBAcCcaDA",
+			"dabAaCBAcCcaDA",
+		},
+		{
+			"dabAaCBAcCcaDA",
+			"dabCBAcCcaDA",
+		},
+		{
+			"dabCBAcCcaDA",
+			"dabCBAcaDA",
+		},
+	}
+	for _, sample := range samples {
+		h.Equals(t, []byte(sample.Output), reduceStep([]byte(sample.Input)))
 	}
 }
